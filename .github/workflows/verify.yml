@@ -18,7 +18,7 @@ jobs:
           toolchain: '1.95.0'
       - name: Validate Python algorithms, baseline and package
         run: python3 tools/check_all.py
-      - name: Compile and test exact Rust helper files
+      - name: Compile active and experimental Rust algorithm tests
         run: cargo test --manifest-path validation_rust/Cargo.toml
       - name: Download Horizon at the precise Nightly commit
         run: |
@@ -46,7 +46,7 @@ jobs:
           git clone -q https://github.com/horizon-rust/horizon-mods.git /tmp/horizon-mods
           git -C /tmp/horizon-mods checkout -q f7709827f6c43d4c2e79c7fa39c1a31e44560b50
           cp -a native/twinkle_opt /tmp/horizon-mods/native/twinkle_opt
-      - name: Apply mixins and cargo check real Horizon client
+      - name: Apply supported HEAD mixin and cargo check Horizon client
         run: cd /tmp/horizon-mods && python3 native/tools/native.py check twinkle_opt
       - name: Compile Horizon client with mixins (Linux only)
         run: cd /tmp/horizon-mods && python3 native/tools/native.py build twinkle_opt
@@ -55,9 +55,9 @@ jobs:
       - name: Archive source .hnmod and build proof
         uses: actions/upload-artifact@v4
         with:
-          name: twinkle-optimizer-aa27eca-linux-verified
+          name: twinkle-optimizer-aa27eca-head-verified
           path: |
-            twinkle_opt-0.2.1.hnmod
+            twinkle_opt-0.2.2.hnmod
             source-lock.json
             ESTADO-DE-ENTREGA.md
           retention-days: 14
