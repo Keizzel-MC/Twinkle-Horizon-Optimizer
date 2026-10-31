@@ -27,18 +27,16 @@ def checks():
     # The mod hooks private renderer methods, NOT Horizon's stable hook API.
     assert 'hooks' not in manifest
     targets = {
-        'page_runs_already_sorted': 'horizon_client_render::gfx::page_runs::PageRuns::regroup',
         'column_bounds_one_pass': 'horizon_client_render::gfx::resident::Column::bounds',
-        'tiny_translucency_sort': 'horizon_client_render::gfx::translucency::Sorter::sort',
     }
     injections = bundle['injection']
-    assert len(injections) == len(targets)
+    assert len(injections) == len(targets) == 1
     for injection in injections:
         assert injection['target'] == targets.pop(injection['id'])
-        assert injection['kind'] == ('HEAD' if injection['id'] == 'column_bounds_one_pass' else 'OVERWRITE')
-        assert injection.get('cancellable', False) == (injection['kind'] == 'HEAD')
+        assert injection['kind'] == 'HEAD'
+        assert injection.get('cancellable', False) is True
         assert (BUNDLE / injection['helper']).is_file()
-        assert len(injection['bindings']) == {'page_runs_already_sorted': 4, 'column_bounds_one_pass': 1, 'tiny_translucency_sort': 3}[injection['id']]
+        assert len(injection['bindings']) == 1
     assert not targets
     return manifest
 
@@ -46,9 +44,10 @@ def checks():
 def package(output=None):
     manifest = checks()
     content = {'horizon-native.json': json.dumps(manifest, indent=2, sort_keys=True) + '\n'}
-    for file in sorted(BUNDLE.iterdir()):
-        if file.suffix in ('.toml', '.rs'):
-            content[f'mixins/{manifest["id"]}/{file.name}'] = file.read_text()
+    active = tomllib.loads((BUNDLE / 'horizon-mixin.toml').read_text())['injection']
+    sources = [BUNDLE / 'horizon-mixin.toml', *(BUNDLE / i['helper'] for i in active)]
+    for file in sorted(sources):
+        content[f'mixins/{manifest["id"]}/{file.name}'] = file.read_text()
     out = Path(output) if output else ROOT / f'{manifest["id"]}-{manifest["version"]}.hnmod'
     out.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(out, 'w') as z:
