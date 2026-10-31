@@ -1,0 +1,63 @@
+name: Verificar Twinkle Horizon Optimizer aa27eca
+
+# MANUAL on purpose: full Horizon build may take significant CI minutes.
+"on":
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.95.0'
+      - name: Validate Python algorithms, baseline and package
+        run: python3 tools/check_all.py
+      - name: Compile and test exact Rust helper files
+        run: cargo test --manifest-path validation_rust/Cargo.toml
+      - name: Download Horizon at the precise Nightly commit
+        run: |
+          git clone -q https://github.com/horizon-rust/horizon.git /tmp/horizon
+          git -C /tmp/horizon checkout -q aa27eca326db26e999d4e59d7899576016764b1e
+          python3 tools/verify_source.py /tmp/horizon
+
+  compile-horizon-linux:
+    needs: verify-sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.95.0'
+      - name: Install native build prerequisites
+        run: sudo apt-get update -q && sudo apt-get install -y rsync
+      - name: Fetch pinned upstream native build system
+        run: |
+          git clone -q https://github.com/horizon-rust/horizon-mods.git /tmp/horizon-mods
+          git -C /tmp/horizon-mods checkout -q f7709827f6c43d4c2e79c7fa39c1a31e44560b50
+          cp -a native/twinkle_opt /tmp/horizon-mods/native/twinkle_opt
+      - name: Apply mixins and cargo check real Horizon client
+        run: cd /tmp/horizon-mods && python3 native/tools/native.py check twinkle_opt
+      - name: Compile Horizon client with mixins (Linux only)
+        run: cd /tmp/horizon-mods && python3 native/tools/native.py build twinkle_opt
+      - name: Assemble source .hnmod after a successful compilation
+        run: python3 tools/package.py
+      - name: Archive source .hnmod and build proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: twinkle-optimizer-aa27eca-linux-verified
+          path: |
+            twinkle_opt-0.2.1.hnmod
+            source-lock.json
+            ESTADO-DE-ENTREGA.md
+          retention-days: 14
