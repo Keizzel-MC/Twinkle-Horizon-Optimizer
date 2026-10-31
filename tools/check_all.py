@@ -15,7 +15,7 @@ if __name__ == '__main__':
     if not result.wasSuccessful():
         raise SystemExit(1)
     subprocess.check_call([sys.executable, str(ROOT / 'tools' / 'package.py')])
-    out = ROOT / 'twinkle_opt-0.2.1.hnmod'
+    out = ROOT / 'twinkle_opt-0.2.2.hnmod'
     with zipfile.ZipFile(out) as z:
         entries = z.namelist()
         assert entries == sorted(entries)
