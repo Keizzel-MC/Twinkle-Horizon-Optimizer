@@ -1,0 +1,21 @@
+[mod]
+id = "twinkle_opt"
+version = "0.2.2"
+priority = 100
+
+[compatibility]
+horizon_revision = "aa27eca326db26e999d4e59d7899576016764b1e"
+
+# 0.2.2: one supported HEAD injection.
+# OVERWRITE on PageRuns::regroup and Sorter::sort was rejected with
+# E_UNSUPPORTED_CONTROL_FLOW (closures in the original method bodies).
+# Inactive helper source files are kept for research but not packaged.
+[[injection]]
+id = "column_bounds_one_pass"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client_render::gfx::resident::Column::bounds"
+helper = "column_bounds_one_pass.rs"
+bindings = [
+  { name = "column", ty = "&mut crate::gfx::resident::Column", value = "&mut *self" },
+]
