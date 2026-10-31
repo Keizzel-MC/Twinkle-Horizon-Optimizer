@@ -39,8 +39,14 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: '1.95.0'
-      - name: Install native build prerequisites
-        run: sudo apt-get update -q && sudo apt-get install -y rsync
+      - name: Install native build prerequisites (including ALSA)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y --no-install-recommends \
+            rsync pkg-config libasound2-dev libudev-dev \
+            libx11-dev libxcursor-dev libxi-dev libxrandr-dev \
+            libxkbcommon-dev libwayland-dev
+          pkg-config --modversion alsa
       - name: Fetch pinned upstream native build system
         run: |
           git clone -q https://github.com/horizon-rust/horizon-mods.git /tmp/horizon-mods
