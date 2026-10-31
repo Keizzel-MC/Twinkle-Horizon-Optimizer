@@ -19,8 +19,8 @@ class BundleTests(unittest.TestCase):
         self.assertEqual(manifest['schema'], 1)
         self.assertNotIn('hooks', manifest)
         toml = tomllib.loads((ROOT / 'native/twinkle_opt/mixins/twinkle_opt/horizon-mixin.toml').read_text())
-        self.assertEqual(len(toml['injection']), 3)
-        self.assertEqual([i['kind'] for i in toml['injection']], ['OVERWRITE', 'HEAD', 'OVERWRITE'])
+        self.assertEqual(len(toml['injection']), 1)
+        self.assertEqual([i['kind'] for i in toml['injection']], ['HEAD'])
 
     def test_reproducible_bundle(self):
         with tempfile.TemporaryDirectory() as td:
@@ -28,12 +28,14 @@ class BundleTests(unittest.TestCase):
             two = package(Path(td) / '2.hnmod')
             self.assertEqual(one.read_bytes(), two.read_bytes())
             with ZipFile(one) as z:
-                self.assertEqual(len(z.namelist()), 5)
+                self.assertEqual(len(z.namelist()), 3)
                 self.assertEqual(z.namelist(), sorted(z.namelist()))
-                self.assertEqual(json.loads(z.read('horizon-native.json'))['version'], '0.2.1')
+                self.assertEqual(json.loads(z.read('horizon-native.json'))['version'], '0.2.2')
                 self.assertNotIn('hooks', json.loads(z.read('horizon-native.json')))
                 self.assertTrue(all(x.filename == 'horizon-native.json' or
                                     x.filename.startswith('mixins/twinkle_opt/') for x in z.infolist()))
+            self.assertNotIn('mixins/twinkle_opt/page_runs_already_sorted.rs', z.namelist())
+            self.assertNotIn('mixins/twinkle_opt/tiny_translucency_sort.rs', z.namelist())
 
     def test_source_pins_are_exact_sha1(self):
         pins = json.loads((ROOT / 'source-lock.json').read_text())

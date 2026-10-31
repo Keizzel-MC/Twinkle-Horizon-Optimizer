@@ -38,3 +38,8 @@ se ha ejecutado en este entorno por falta de `rustc` y `cargo`.
 - No deshabilites el antivirus para probarlo.
 - La detección de un antivirus sobre Horizon no queda resuelta al usar este mod.
 - No se descargan bibliotecas externas dentro de los helpers Rust.
+
+
+## Corrección 0.2.2
+
+En la ejecución #1 de GitHub Actions, el planificador de `horizon-mixins` rechazó `PageRuns::regroup` por `E_UNSUPPORTED_CONTROL_FLOW` (closures en la función original). La revisión 0.2.2 conserva solo el hook HEAD de `Column::bounds`; los otros algoritmos permanecen solo como investigación y pruebas, no en el `.hnmod`. La compilación de esta revisión aún está pendiente.
