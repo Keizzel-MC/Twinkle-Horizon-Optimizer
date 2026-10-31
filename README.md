@@ -1,18 +1,22 @@
-# Twinkle Horizon Optimizer 0.2.1 — adaptación a `aa27eca`
+# Twinkle Horizon Optimizer 0.2.2 — adaptación a `aa27eca`
 
 **Para la Nightly Horizon 2026-10-31 · `aa27eca326db26e999d4e59d7899576016764b1e`.**
 
-Esta entrega es un **paquete fuente nativo `.hnmod`**, no un ejecutable Windows compilado. Contiene tres optimizaciones conservadoras del renderizador, pruebas de equivalencia, el benchmark **original** proporcionado por el usuario y una tarea de GitHub Actions para intentar compilarlo contra el cliente auténtico de Horizon. **No se ha comprobado todavía que el mod compile o se ejecute con éxito dentro del juego**; no se anuncian FPS adicionales.
+Esta entrega es un **paquete fuente nativo `.hnmod`**, no un ejecutable Windows compilado. Contiene **una optimización activa** y dos algoritmos de investigación **desactivados**, pruebas de equivalencia, el benchmark **original** proporcionado por el usuario y una tarea de GitHub Actions para intentar compilarlo contra el cliente auténtico de Horizon. **No se ha comprobado todavía que el mod compile o se ejecute con éxito dentro del juego**; no se anuncian FPS adicionales.
 
-## Qué optimiza
+## Estado de las optimizaciones (0.2.2)
 
 | Cambio | Método interno de Horizon | Objetivo |
 |---|---|---|
-| PageRuns sorted fast path | `gfx::page_runs::PageRuns::regroup` | Evitar copias/ordenamientos si la lista de draws ya respeta el orden de las bandas y páginas |
+| PageRuns sorted fast path — DESACTIVADA (OVERWRITE incompatible) | `gfx::page_runs::PageRuns::regroup` | Evitar copias/ordenamientos si la lista de draws ya respeta el orden de las bandas y páginas |
 | Column bounds | `gfx::resident::Column::bounds` | Calcular el mínimo/máximo Y en un solo recorrido |
-| Tiny translucency | `gfx::translucency::Sorter::sort` | Resolver 0–2 quads con una comparación, evitando el sort general |
+| Tiny translucency — DESACTIVADA (OVERWRITE incompatible) | `gfx::translucency::Sorter::sort` | Resolver 0–2 quads con una comparación, evitando el sort general |
 
 No modifica la interfaz de Minecraft, no toca archivos de usuario, no conecta a servicios externos, no recopila telemetría y no incorpora el código de Sodium. Horizon ya incluye muchas técnicas de Sodium; esto **no es un port de Sodium completo**.
+
+## Motivo de la corrección 0.2.2
+
+La ejecución inicial de GitHub Actions falló antes de compilar, con `E_UNSUPPORTED_CONTROL_FLOW` en `PageRuns::regroup`. El analizador de `horizon-mixins` impide reemplazar mediante `OVERWRITE` funciones que contienen cierres (`closures`). `Sorter::sort` también los contiene. Por seguridad retiramos ambas inyecciones del paquete fuente nativo. **No se ha verificado todavía una compilación completa de 0.2.2 ni ninguna mejora de FPS.**
 
 ## ¿Por qué cambia de versión?
 
@@ -20,8 +24,8 @@ Los SHA-1 Git de los tres archivos del renderizador de `aa27eca` **coinciden exa
 
 ## Archivos principales
 
-- `twinkle_opt-0.2.1.hnmod`: ZIP de código fuente para mods nativos (no es un DLL ni EXE).
-- `native/twinkle_opt/mixins/twinkle_opt/`: manifiesto TOML y 3 helpers Rust.
+- `twinkle_opt-0.2.2.hnmod`: ZIP de código fuente para mods nativos (no es un DLL ni EXE).
+- `native/twinkle_opt/mixins/twinkle_opt/`: manifiesto y 3 helpers Rust en el repositorio; **solo se empaqueta e inyecta `column_bounds_one_pass.rs`**.
 - `validation_rust/`: tests Rust que incluyen los mismos archivos de helpers con modelos mínimos.
 - `.github/workflows/verify.yml`: prueba Rust y construcción completa contra Horizon en GitHub Actions (Linux); **se inicia solo manualmente** para no gastar CI por accidente.
 - `benchmarks/vanilla-aa27eca-standard.json`: benchmark base suministrado por el usuario, **1 ejecución** por escena. No prueba ningún aumento del mod.
@@ -47,7 +51,7 @@ cargo test --manifest-path validation_rust/Cargo.toml
 
 ## 2. Compilación completa en GitHub Actions
 
-Sube el contenido del proyecto a un repositorio propio (no el código de Minecraft). En GitHub abre **Actions → Verificar Twinkle Horizon Optimizer aa27eca → Run workflow**. El trabajo `verify-sources` instala Rust, ejecuta las pruebas, descarga la revisión original de Horizon y comprueba la integridad. Si pasa, `compile-horizon-linux` ejecuta las herramientas upstream `native.py check` y `native.py build` contra esa revisión. La compilación puede consumir bastantes minutos y recursos de GitHub Actions. **No se ha ejecutado ni pasado en esta entrega**. Aunque pase Linux, Windows sigue pendiente de prueba.
+Sube el contenido del proyecto a un repositorio propio (no el código de Minecraft). En GitHub abre **Actions → Verificar Twinkle Horizon Optimizer aa27eca → Run workflow**. El trabajo `verify-sources` instala Rust, ejecuta las pruebas, descarga la revisión original de Horizon y comprueba la integridad. Si pasa, `compile-horizon-linux` ejecuta las herramientas upstream `native.py check` y `native.py build` contra esa revisión. La compilación puede consumir bastantes minutos y recursos de GitHub Actions. **La versión 0.2.1 falló en el planificador; la 0.2.2 aún necesita esta prueba.** Aunque pase Linux, Windows sigue pendiente de prueba.
 
 Herramientas upstream fijadas:
 - Horizon: `aa27eca326db26e999d4e59d7899576016764b1e`.
