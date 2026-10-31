@@ -1,0 +1,48 @@
+[mod]
+id = "twinkle_opt"
+version = "0.2.1"
+priority = 100
+
+# EXACT internal renderer revision, not a stable native hook API.
+[compatibility]
+horizon_revision = "aa27eca326db26e999d4e59d7899576016764b1e"
+
+# Optimization 1: eliminate stable sort and draw-buffer copy when runs
+# are already sorted by their full (distance band, arena page) key.
+[[injection]]
+id = "page_runs_already_sorted"
+kind = "OVERWRITE"
+target = "horizon_client_render::gfx::page_runs::PageRuns::regroup"
+helper = "page_runs_already_sorted.rs"
+bindings = [
+  { name = "runs", ty = "&mut crate::gfx::page_runs::PageRuns", value = "&mut *self" },
+  { name = "draws", ty = "&mut [[u32; 5]]", value = "draws" },
+  { name = "pages", ty = "&mut [(u32, Option<u32>)]", value = "pages" },
+  { name = "base", ty = "usize", value = "base" },
+]
+
+# Optimization 2: update column vertical bounds in one walk, not two.
+# This is a chunk-residency maintenance optimization, NOT a new culling algorithm.
+[[injection]]
+id = "column_bounds_one_pass"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client_render::gfx::resident::Column::bounds"
+helper = "column_bounds_one_pass.rs"
+bindings = [
+  { name = "column", ty = "&mut crate::gfx::resident::Column", value = "&mut *self" },
+]
+
+# Optimization 3: stable quad ordering for 0-2 translucent quads without
+# invoking the generic stable comparison sort. All other sections use
+# Horizon's original translucency sorter untouched.
+[[injection]]
+id = "tiny_translucency_sort"
+kind = "OVERWRITE"
+target = "horizon_client_render::gfx::translucency::Sorter::sort"
+helper = "tiny_translucency_sort.rs"
+bindings = [
+  { name = "sorter", ty = "&mut crate::gfx::translucency::Sorter", value = "&mut *self" },
+  { name = "centers", ty = "&[[f32; 3]]", value = "centers" },
+  { name = "camera", ty = "[f32; 3]", value = "camera" },
+]

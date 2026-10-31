@@ -1,0 +1,11 @@
+{
+  "horizon_revision": "aa27eca326db26e999d4e59d7899576016764b1e",
+  "horizon_mixins_revision": "0d6b103c70633d8fd9443d8d0acd3aadaacedb06",
+  "original_git_blob_sha1": {
+    "crates/horizon-client-render/src/gfx/page_runs.rs": "3ada45737ed8718ab15fdbe920daa3bf1d459fc9",
+    "crates/horizon-client-render/src/gfx/resident.rs": "850871948ab4152a2181152df793d02de962c432",
+    "crates/horizon-client-render/src/gfx/translucency.rs": "4c1ad66839147cd3d3f8824c0d5f5e053e38d534"
+  },
+  "verified_version": "Nightly 2026-10-31 \u00b7 aa27eca",
+  "verification_note": "Three code blobs verified by GitHub connector on 2026-10-31; exact revision matches local benchmark."
+}

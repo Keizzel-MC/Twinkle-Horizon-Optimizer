@@ -1,0 +1,55 @@
+test_aggregate_rejects_settings_change (test_aggregate.ActualBenchmarkTests.test_aggregate_rejects_settings_change) ... ok
+test_aggregate_rejects_single_run (test_aggregate.ActualBenchmarkTests.test_aggregate_rejects_single_run) ... ok
+test_aggregate_rejects_version_change (test_aggregate.ActualBenchmarkTests.test_aggregate_rejects_version_change) ... ok
+test_aggregate_three_independent_runs (test_aggregate.ActualBenchmarkTests.test_aggregate_three_independent_runs) ... ok
+test_baseline (test_aggregate.ActualBenchmarkTests.test_baseline) ... ok
+test_empty_single_and_extremes (test_equivalence.ColumnBoundsTests.test_empty_single_and_extremes) ... ok
+test_random_30000 (test_equivalence.ColumnBoundsTests.test_random_30000) ... ok
+test_empty (test_equivalence.PageRunsTests.test_empty) ... ok
+test_key_sorted_multi_page (test_equivalence.PageRunsTests.test_key_sorted_multi_page) ... ok
+test_out_of_order_multi_page (test_equivalence.PageRunsTests.test_out_of_order_multi_page) ... ok
+test_random_30000 (test_equivalence.PageRunsTests.test_random_30000) ... ok
+test_same_page_different_bands (test_equivalence.PageRunsTests.test_same_page_different_bands) ... ok
+test_single (test_equivalence.PageRunsTests.test_single) ... ok
+test_ties_stay_stable (test_equivalence.PageRunsTests.test_ties_stay_stable) ... ok
+test_manifest_and_injections (test_package.BundleTests.test_manifest_and_injections) ... ok
+test_no_external_network_calls_or_unreviewed_imports (test_package.BundleTests.test_no_external_network_calls_or_unreviewed_imports) ... ok
+test_reproducible_bundle (test_package.BundleTests.test_reproducible_bundle) ... ok
+test_source_pins_are_exact_sha1 (test_package.BundleTests.test_source_pins_are_exact_sha1) ... ok
+test_comparison_uses_real_frames (test_package.CompareTests.test_comparison_uses_real_frames) ... ok
+test_incompatible_conditions_are_rejected (test_package.CompareTests.test_incompatible_conditions_are_rejected) ... ok
+test_single_repeat_is_rejected (test_package.CompareTests.test_single_repeat_is_rejected) ... ok
+test_distance_ascending_descending_and_ties (test_tiny_translucency.SmallSortTests.test_distance_ascending_descending_and_ties) ... ok
+test_empty (test_tiny_translucency.SmallSortTests.test_empty) ... ok
+test_larger_quads_preserve_original (test_tiny_translucency.SmallSortTests.test_larger_quads_preserve_original) ... ok
+test_random_30000 (test_tiny_translucency.SmallSortTests.test_random_30000) ... ok
+test_single (test_tiny_translucency.SmallSortTests.test_single) ... ok
+test_special_floats (test_tiny_translucency.SmallSortTests.test_special_floats) ... ok
+
+----------------------------------------------------------------------
+Ran 27 tests in 26.419s
+
+OK
+{
+  "status": "UNCOMPILED_SOURCE_BUNDLE",
+  "file": "/mnt/data/Twinkle-Horizon-Optimizer-aa27eca/twinkle_opt-0.2.1.hnmod",
+  "bytes": 3308,
+  "sha256": "eb954c0eae3daea8802161ba26440c247528b68bc920b46afa8e1581b4ea5749",
+  "injections": 3
+}
+{
+  "status": "UNCOMPILED_SOURCE_BUNDLE",
+  "file": "/tmp/tmprwyink7u/1.hnmod",
+  "bytes": 3308,
+  "sha256": "eb954c0eae3daea8802161ba26440c247528b68bc920b46afa8e1581b4ea5749",
+  "injections": 3
+}
+{
+  "status": "UNCOMPILED_SOURCE_BUNDLE",
+  "file": "/tmp/tmprwyink7u/2.hnmod",
+  "bytes": 3308,
+  "sha256": "eb954c0eae3daea8802161ba26440c247528b68bc920b46afa8e1581b4ea5749",
+  "injections": 3
+}
+SHA256: eb954c0eae3daea8802161ba26440c247528b68bc920b46afa8e1581b4ea5749
+Comprobaciones estáticas y algorítmicas completadas. COMPILACIÓN RUST: NO PROBADA.

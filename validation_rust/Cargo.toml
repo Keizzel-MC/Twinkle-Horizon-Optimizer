@@ -1,0 +1,8 @@
+[package]
+name = "twinkle-horizon-algorithm-validation"
+version = "0.2.1"
+edition = "2024"
+license = "MIT"
+publish = false
+
+[dependencies]
